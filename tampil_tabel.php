@@ -82,9 +82,9 @@
         </tr>
         <tr>
             <td>4</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>KANCAB SEMARANG</td>
+            <td>BATALYON INFANTERI 410/ALUGORO <br>POLRES KAJEN <br>YONIF 408/SRAGEN <br>DITPOLAIRUD POLDA JATENG</td>
+            <td>TNI AD <br>POLRI <br>TNI AD <br>POLRI</td>
             <td></td>
             <td></td>
         </tr>
