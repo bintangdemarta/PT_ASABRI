@@ -1,31 +1,37 @@
 <?php
-// Mendapatkan nilai-nilai dari form
-$nama = $_POST['nama'];
-$nomor = $_POST['nomor'];
-$subject = $_POST['subject'];
-$message = $_POST['message'];
+require_once __DIR__ . '/includes/db.php';
 
-// Melakukan koneksi ke database
-$koneksi = mysqli_connect("localhost", "root", "", "asabri_db");
-
-// Mengecek koneksi
-if (mysqli_connect_errno()) {
-    echo "Koneksi database gagal: " . mysqli_connect_error();
-    exit();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: asabri.html');
+    exit;
 }
 
-// Menyiapkan query untuk menyimpan data ke database
-$query = "INSERT INTO data_contact (nama, nomor, subject, message) VALUES ('$nama', '$nomor', '$subject', '$message')";
+$nama = trim((string) ($_POST['nama'] ?? ''));
+$nomor = preg_replace('/\D/', '', (string) ($_POST['nomor'] ?? ''));
+$subject = trim((string) ($_POST['subject'] ?? ''));
+$message = trim((string) ($_POST['message'] ?? ''));
 
-// Menjalankan query
-if (mysqli_query($koneksi, $query)) {
-    // Data berhasil disimpan ke database, arahkan kembali ke halaman utama
-    header("Location: asabri.html");
-    exit();
-} else {
-    echo "Error: " . $query . "<br>" . mysqli_error($koneksi);
+$errors = [];
+if ($nama === '' || mb_strlen($nama) > 100) $errors[] = 'Nama wajib diisi (maks. 100 karakter).';
+if (strlen($nomor) < 9 || strlen($nomor) > 15) $errors[] = 'Nomor HP harus 9–15 digit.';
+if ($subject === '' || mb_strlen($subject) > 150) $errors[] = 'Subject wajib diisi (maks. 150 karakter).';
+if ($message === '' || mb_strlen($message) > 5000) $errors[] = 'Pesan wajib diisi (maks. 5000 karakter).';
+
+if ($errors) {
+    http_response_code(422);
+    echo '<p>' . implode('<br>', array_map('e', $errors)) . '</p><p><a href="asabri.html#contact">Kembali</a></p>';
+    exit;
 }
 
-// Menutup koneksi
-mysqli_close($koneksi);
-?>
+try {
+    $stmt = db()->prepare('INSERT INTO data_contact (nama, nomor, subject, message) VALUES (?, ?, ?, ?)');
+    $stmt->execute([$nama, $nomor, $subject, $message]);
+} catch (Throwable $ex) {
+    error_log('process_form.php: ' . $ex->getMessage());
+    http_response_code(500);
+    echo '<p>Pesan gagal disimpan. Silakan coba lagi nanti.</p><p><a href="asabri.html">Kembali</a></p>';
+    exit;
+}
+
+header('Location: asabri.html?terkirim=1');
+exit;

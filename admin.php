@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/includes/auth.php';
+require_admin();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +44,7 @@
 </head>
 <body>
     <h2 class="text-center">Data Laporan Konsumen</h2>
+    <p class="text-center"><a href="login.php?logout=1">Logout</a></p>
     <div class="container">
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
@@ -55,103 +60,40 @@
             </thead>
             <tbody>
                 <?php
-                // Melakukan koneksi ke database
-                $koneksi = mysqli_connect("localhost", "root", "", "asabri_db");
-
-                // Mengecek koneksi
-                if (mysqli_connect_errno()) {
-                    echo "Koneksi database gagal: " . mysqli_connect_error();
-                    exit();
-                }
-
-                // Menyiapkan query untuk mendapatkan data dari tabel data_contact
-                $query = "SELECT * FROM data_contact";
-
-                // Menjalankan query
-                $result = mysqli_query($koneksi, $query);
-
-                // Menampilkan data ke dalam tabel
-                if (mysqli_num_rows($result) > 0) {
+                $rows = db()->query('SELECT * FROM data_contact ORDER BY created_at DESC')->fetchAll();
+                if ($rows) {
                     $no = 1;
-                    while ($row = mysqli_fetch_assoc($result)) {
+                    foreach ($rows as $row) {
+                        $wa = preg_replace('/^0/', '', preg_replace('/\D/', '', $row['nomor']));
                         echo "<tr>";
-                        echo "<td>" . $no . "</td>";
-                        echo "<td>" . $row['nama'] . "</td>";
-                        echo "<td>" . $row['nomor'] . "</td>";
-                        echo "<td>" . $row['subject'] . "</td>";
-                        echo "<td>" . $row['message'] . "</td>";
-                        echo "<td>" . $row['created_at'] . "</td>";
+                        echo "<td>" . $no++ . "</td>";
+                        echo "<td>" . e($row['nama']) . "</td>";
+                        echo "<td>" . e($row['nomor']) . "</td>";
+                        echo "<td>" . e($row['subject']) . "</td>";
+                        echo "<td style='white-space:pre-line;text-align:left'>" . e($row['message']) . "</td>";
+                        echo "<td>" . e($row['created_at']) . "</td>";
                         echo "<td class='btn-group'>";
-                        echo "<form action='edit_data.php' method='post'>";
-                        echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
-                        echo "<button type='submit' class='btn btn-primary'>Edit</button>";
-                        echo "</form>";
-                        echo "<form action='hapus_data.php' method='post'>";
-                        echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
+                        echo "<a href='edit_data.php?id=" . (int) $row['id'] . "' class='btn btn-primary'>Edit</a>";
+                        echo "<form action='hapus_data.php' method='post' onsubmit=\"return confirm('Hapus data ini?')\">";
+                        echo "<input type='hidden' name='id' value='" . (int) $row['id'] . "'>";
+                        echo "<input type='hidden' name='csrf' value='" . e(csrf_token()) . "'>";
                         echo "<button type='submit' class='btn btn-danger'>Hapus</button>";
                         echo "</form>";
-                        echo "<a href='https://api.whatsapp.com/send?phone=+62" . $row['nomor'] . "' class='btn btn-success' target='_blank'>Whatsapp <i class='fab fa-whatsapp'></i></a>";
+                        echo "<a href='https://api.whatsapp.com/send?phone=62" . e($wa) . "' class='btn btn-success' target='_blank' rel='noopener'>Whatsapp <i class='fab fa-whatsapp'></i></a>";
                         echo "</td>";
                         echo "</tr>";
-                        $no++;
                     }
                 } else {
-                    // Jika tidak ada data, tampilkan "N/A" untuk setiap kolom
-                    echo "<tr><td colspan='6' class='text-center'>Tidak ada data contact.</td></tr>";
+                    echo "<tr><td colspan='7' class='text-center'>Tidak ada data contact.</td></tr>";
                 }
-
-                // Menutup koneksi
-                mysqli_close($koneksi);
                 ?>
             </tbody>
         </table>
     </div>
     
-    <script>
-        function editData(id) {
-            var formData = new FormData();
-            formData.append('id', id);
-
-            fetch('edit_data.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    alert("Data berhasil diupdate");
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        function hapusData(id) {
-            if(confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-                var formData = new FormData();
-                formData.append('id', id);
-
-                fetch('hapus_data.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.success) {
-                        alert("Data berhasil dihapus");
-                        location.reload();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        }
-    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-<!-- nrp/nip pensiun -->

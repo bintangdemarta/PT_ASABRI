@@ -1,0 +1,6 @@
+Options -Indexes
+<FilesMatch "\.(sql|md|yml|yaml|zip|py)$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 /\.git
+RedirectMatch 404 /data\.local-only
