@@ -25,9 +25,9 @@
                             <a href="DenganAI.html">Dengan AI</a>
                         </div>
                     </li>
-                    <li><a href="Buku_Saku.html">Buku Informasi ASABRI</a></li>
+                    <li><a href="Buku_saku.html">Buku Informasi ASABRI</a></li>
                     <li><a href="Sosialisasi_program.html">Sosialisasi Program ASABRI</a></li>
-                    <li><a href="chatbot.html">Quesioner Asabri</a></li>
+                    <li><a href="chatbot.html">Tanya ASABRI</a></li>
                 </ul>
             </div>
             <i class="fa fa-bars" onclick="showMenu()"  style="background: black;"></i>
@@ -48,14 +48,14 @@
 
         <div class="row">
             <div class="asabri-col">
-                <a href="Paparan Penyelenggaraan Program PT ASABRI (Persero) Tahun 2023_edit 18082023.pptx.pptx"><img src="images/Screenshot 2024-03-07 164822.png" alt="">
+                <a href="index.html"><img src="images/Screenshot 2024-03-07 164822.png" alt="">
                 <div class="layer"></div>
-                <a href="Paparan Penyelenggaraan Program PT ASABRI (Persero) Tahun 2023_edit 18082023.pptx.pptx" style="text-decoration: none; color: black;" ><h3>Sosialisasi Lengkap</h3></a>
+                <a href="index.html" style="text-decoration: none; color: black;" ><h3>Sosialisasi Lengkap</h3></a>
             </div>
             <div class="asabri-col">
-                <a href="PAPARAN MATERI PROGRAM ASABRI AI-NEW.pptx"><img src="images/AI(2).png" alt="">
+                <a href="AI.html"><img src="images/AI(2).png" alt="">
                 <div class="layer"></div>
-                <a href="PAPARAN MATERI PROGRAM ASABRI AI-NEW.pptx" style="text-decoration: none; color: black;"> <h3>Sosialisasi dengan AI</h3> </a>
+                <a href="AI.html" style="text-decoration: none; color: black;"> <h3>Sosialisasi dengan AI</h3> </a>
             </div>
             <div class="asabri-col">
                 <a href="Buku Informasi Program Layanan ASABRI 2024.pdf"><img src="images/Buku.png" alt="">
@@ -100,9 +100,10 @@
                 </div>
             </div>
             <div class="contact-col">
+                <p id="terkirim" style="display:none;color:#1c7c3a;font-weight:600">Pesan Anda sudah terkirim. Terima kasih.</p>
                 <form id="contactForm" method="post" action="process_form.php">
                     <input type="text" name="nama" id="nama" placeholder="Masukkan nama anda" required>
-                    <input type="number" name="nomor" id="nomor" placeholder="Masukkan nomor HP anda" required>
+                    <input type="tel" name="nomor" id="nomor" placeholder="Masukkan nomor HP anda" pattern="[0-9+ \-]{9,20}" maxlength="20" required>
                     <!--  tambahkan nrp/nip pensiun -->
                         
                     <!--  -->
@@ -150,6 +151,11 @@
         </div>
     </footer>
 
+    <script>
+        if (new URLSearchParams(location.search).has('terkirim')) {
+            document.getElementById('terkirim').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
 
